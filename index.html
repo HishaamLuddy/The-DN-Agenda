@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The DN Agenda</title>
+<style>
+:root{--bg:#faf8f5;--card:#fff;--text:#1f1d1a;--muted:#7a746b;--line:#e8e3db;--accent:#e4572e;--accent-t:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171614;--card:#222120;--text:#f3efe8;--muted:#9a948a;--line:#34312d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171614;--card:#222120;--text:#f3efe8;--muted:#9a948a;--line:#34312d;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+h1{font-size:22px;margin:0}
+.nav{display:flex;gap:6px;align-items:center}
+button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+.range{color:var(--muted);font-size:14px;margin-bottom:12px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.day.today{border-color:var(--accent)}
+.dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dh b{font-size:15px}
+.dh button{padding:4px 10px;font-size:14px}
+.plan{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+.plan .t{min-width:52px;color:var(--accent);font-weight:600;font-size:14px}
+.plan .m{flex:1}
+.plan .x{border:none;background:none;color:var(--muted);padding:6px 10px;font-size:18px}
+.empty{color:var(--muted);font-size:14px}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);width:min(92vw,380px);padding:16px}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input{width:100%;font:inherit;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button.on{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+.year{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.mon{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px}
+.g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:6px;text-align:center}
+.g .hd{font-size:11px;color:var(--muted)}
+.g .c{padding:0;height:28px;border:none;background:none;font-size:13px;border-radius:8px}
+.g .c.has{background:var(--accent);color:var(--accent-t);font-weight:600}
+.g .c.td{outline:2px solid var(--text);outline-offset:-2px}
+.mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.mgrid .hd{font-size:12px;color:var(--muted);text-align:center}
+.mc{display:block;width:100%;min-height:78px;padding:4px;text-align:left;border-radius:8px;overflow:hidden}
+.mc.td{border-color:var(--accent)}
+.mc .n{font-weight:600;font-size:12px}
+.mc .p{font-size:10px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--accent);color:var(--accent-t);border-radius:4px;padding:1px 3px;margin-top:2px}
+.mc .more{font-size:10px;color:var(--muted);margin-top:2px}
+.pad{min-height:78px}
+.whos{display:flex;gap:6px;flex-wrap:wrap}.whos button{padding:6px 12px;border-radius:20px}.whos button.on{background:var(--pc);border-color:var(--pc);color:#fff}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin:3px 0}.chip{font-size:11px;padding:1px 8px;border-radius:10px;background:var(--line);color:var(--muted)}
+.cols{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:14px}.cols label{display:flex;align-items:center;gap:6px;margin:0;color:var(--text)}.cols input{width:30px;height:30px;padding:0;border:none;background:none}.cols span{color:var(--muted)}
+.derr{color:#d33;font-size:13px;margin-top:8px;word-break:break-word}.row #del{margin-right:auto;color:#d33}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:90vw;z-index:20}#toast[hidden]{display:none}
+#lock{max-width:340px;margin:18vh auto 0;padding:16px;text-align:center}#lock p{color:var(--muted)}#lock input{margin:8px 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="lock">
+  <h1>📅 The DN Agenda</h1>
+  <p>Enter the group passcode</p>
+  <input id="pw" type="password" autocomplete="current-password" placeholder="Passcode">
+  <button class="primary" id="go">Open</button>
+  <div class="derr" id="lerr"></div>
+</div>
+
+<main id="app" hidden>
+  <header>
+    <h1>📅 The DN Agenda</h1>
+    <div class="nav"><button id="prev" aria-label="Previous">‹</button><button id="today">Today</button><button id="next" aria-label="Next">›</button></div>
+  </header>
+  <div class="tabs"><button id="tw" class="on">Week</button><button id="tm">Month</button><button id="ty">Year</button></div>
+  <div class="cols" id="cols"></div>
+  <div class="range" id="range"></div>
+  <div id="days"></div>
+</main>
+
+<div id="toast" hidden></div>
+<dialog id="dlg">
+  <b id="dtitle">Add a plan</b>
+  <label for="ftitle">What’s the plan?</label>
+  <input id="ftitle" placeholder="Braai at Sam’s, beach, movie…" maxlength="80">
+  <label for="ftime">Time (optional)</label>
+  <input id="ftime" type="time">
+  <label for="fdate">Date</label>
+  <input id="fdate" type="date">
+  <label>Who’s in? (leave blank for everyone)</label>
+  <div class="whos" id="whos"></div>
+  <div class="derr" id="derr"></div>
+  <div class="row"><button id="del" hidden>Delete</button><button id="cancel">Cancel</button><button class="primary" id="save">Add</button></div>
+</dialog>
+
+<script>
+(function(){
+  // 1) After you deploy the Apps Script, paste its Web app URL between the quotes:
+  var API_URL="https://script.google.com/macros/s/AKfycbwUWXhP-G-R11oVw8cx5i5Wl5zP1OagMs1EgL5EpVUcojqYW96W6jkKmXLywjkaD_ayhA/exec";
+
+  var DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var PEOPLE=[["Hishaam","#e4572e"],["Yameen","#2e86e4"],["Zain","#2ea66b"]], sel=[];
+  var plans=[], pass="", last="", addDate=null, view="week", editId=null, weekStart=startOfWeek(new Date()), year=new Date().getFullYear(), month=new Date().getMonth();
+  var $=function(id){return document.getElementById(id)};
+
+  function startOfWeek(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());var dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);return x}
+  function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+  function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+  function toast(t){var e=$("toast");e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){e.hidden=true},4000)}
+
+  /* ---------- storage (Google Sheet via Apps Script) ---------- */
+  function getPass(){try{return localStorage.getItem("dn_pass")||""}catch(e){return ""}}
+  function setPass(v){try{localStorage.setItem("dn_pass",v)}catch(e){}}
+  function api(action,data){
+    return fetch(API_URL,{method:"POST",body:JSON.stringify(Object.assign({pass:pass,action:action},data||{}))})
+      .then(function(r){return r.json()})
+      .then(function(j){if(!j.ok)throw new Error(j.error||"error");return j});
+  }
+  function load(){
+    return api("list").then(function(j){
+      $("lock").hidden=true;$("app").hidden=false;
+      var s=JSON.stringify(j);if(s===last)return;last=s;
+      plans=j.plans||[];
+      if(j.colors)PEOPLE.forEach(function(p){if(j.colors[p[0]])p[1]=j.colors[p[0]]});
+      buildCols();render();
+    });
+  }
+  function showLock(msg){$("app").hidden=true;$("lock").hidden=false;$("lerr").textContent=msg||""}
+  function onLoadError(e,quiet){
+    if(/passcode/i.test(e.message)){setPass("");showLock("Wrong passcode, try again.")}
+    else if(!quiet)toast("Can’t reach the calendar. Check your connection.");
+  }
+  function start(){
+    if(API_URL.indexOf("PASTE_")===0){showLock("Setup needed: paste your Apps Script web app URL into index.html.");return}
+    pass=getPass();
+    if(!pass){showLock("");return}
+    load().catch(function(e){onLoadError(e,false)});
+  }
+  $("go").onclick=function(){pass=$("pw").value.trim();if(!pass)return;setPass(pass);$("lerr").textContent="";load().catch(function(e){onLoadError(e,false)})};
+  $("pw").onkeydown=function(e){if(e.key==="Enter")$("go").click()};
+  setInterval(function(){if(!document.hidden&&!$("app").hidden&&!$("dlg").open)load().catch(function(e){onLoadError(e,true)})},15000);
+
+  /* ---------- views ---------- */
+  function sync(){$("tw").classList.toggle("on",view==="week");$("tm").classList.toggle("on",view==="month");$("ty").classList.toggle("on",view==="year")}
+  function renderMonth(){
+    $("range").textContent=MONTHS[month]+" "+year+" · tap a day to open its week";
+    var box=$("days");box.textContent="";
+    var by={};plans.forEach(function(p){if(p.date){(by[p.date]=by[p.date]||[]).push(p)}});
+    var todayIso=iso(new Date());
+    var g=document.createElement("div");g.className="mgrid";
+    ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(function(l){var s=document.createElement("div");s.className="hd";s.textContent=l;g.appendChild(s)});
+    var lead=(new Date(year,month,1).getDay()+6)%7, n=new Date(year,month+1,0).getDate();
+    for(var i=0;i<lead;i++){var e=document.createElement("div");e.className="pad";g.appendChild(e)}
+    for(var d=1;d<=n;d++){
+      var dt=new Date(year,month,d), k=iso(dt);
+      var c=document.createElement("button");c.className="mc"+(k===todayIso?" td":"");
+      var num=document.createElement("div");num.className="n";num.textContent=d;c.appendChild(num);
+      var list=(by[k]||[]).sort(function(a,b){return (a.time||"99:99").localeCompare(b.time||"99:99")});
+      list.slice(0,2).forEach(function(p){var x=document.createElement("div");x.className="p";x.textContent=(p.time?p.time+" ":"")+p.title;c.appendChild(x)});
+      if(list.length>2){var mo=document.createElement("div");mo.className="more";mo.textContent="+"+(list.length-2)+" more";c.appendChild(mo)}
+      c.onclick=(function(dt){return function(){weekStart=startOfWeek(dt);view="week";sync();render()}})(dt);
+      g.appendChild(c);
+    }
+    box.appendChild(g);
+  }
+  function renderYear(){
+    $("range").textContent=year+" · tap a day to plan it (coloured days already have plans)";
+    var box=$("days");box.textContent="";
+    var counts={};plans.forEach(function(p){if(p.date)counts[p.date]=(counts[p.date]||0)+1});
+    var todayIso=iso(new Date());
+    var wrap=document.createElement("div");wrap.className="year";
+    for(var m=0;m<12;m++){
+      var card=document.createElement("div");card.className="mon";
+      var h=document.createElement("b");h.textContent=MONTHS[m];card.appendChild(h);
+      var g=document.createElement("div");g.className="g";
+      ["M","T","W","T","F","S","S"].forEach(function(l){var s=document.createElement("span");s.className="hd";s.textContent=l;g.appendChild(s)});
+      var lead=(new Date(year,m,1).getDay()+6)%7, n=new Date(year,m+1,0).getDate();
+      for(var i=0;i<lead;i++)g.appendChild(document.createElement("span"));
+      for(var d=1;d<=n;d++){
+        var dt=new Date(year,m,d), k=iso(dt);
+        var c=document.createElement("button");c.textContent=d;c.className="c"+(counts[k]?" has":"")+(k===todayIso?" td":"");
+        if(counts[k])c.title=counts[k]+" plan(s)";
+        c.onclick=(function(dt){return function(){weekStart=startOfWeek(dt);view="week";sync();render()}})(dt);
+        g.appendChild(c);
+      }
+      card.appendChild(g);wrap.appendChild(card);
+    }
+    box.appendChild(wrap);
+  }
+  function render(){
+    if(view==="year"){renderYear();return}
+    if(view==="month"){renderMonth();return}
+    var end=addDays(weekStart,6);
+    $("range").textContent=weekStart.getDate()+" "+MONTHS[weekStart.getMonth()]+" – "+end.getDate()+" "+MONTHS[end.getMonth()]+" "+end.getFullYear();
+    var box=$("days");box.textContent="";
+    var todayIso=iso(new Date());
+    for(var i=0;i<7;i++){
+      var d=addDays(weekStart,i), key=iso(d);
+      var day=document.createElement("div");day.className="day"+(key===todayIso?" today":"");
+      var dh=document.createElement("div");dh.className="dh";
+      var b=document.createElement("b");b.textContent=DAYS[d.getDay()]+" "+d.getDate()+" "+MONTHS[d.getMonth()];
+      var add=document.createElement("button");add.textContent="+ Add";
+      add.onclick=(function(k){return function(){openAdd(k)}})(key);
+      dh.appendChild(b);dh.appendChild(add);day.appendChild(dh);
+      var list=plans.filter(function(p){return p.date===key}).sort(function(a,b){return (a.time||"99:99").localeCompare(b.time||"99:99")});
+      if(!list.length){var e=document.createElement("div");e.className="empty";e.textContent="Nothing planned yet";day.appendChild(e)}
+      list.forEach(function(p){
+        var r=document.createElement("div");r.className="plan";
+        var t=document.createElement("div");t.className="t";t.textContent=p.time||"All day";
+        var m=document.createElement("div");m.className="m";
+        var tt=document.createElement("div");tt.textContent=p.title;
+        m.appendChild(tt);m.appendChild(chips(p.who));r.appendChild(t);r.appendChild(m);
+        var ed=document.createElement("button");ed.className="x";ed.textContent="✎";ed.setAttribute("aria-label","Edit plan");ed.onclick=function(){openEdit(p)};r.appendChild(ed);
+        var x=document.createElement("button");x.className="x";x.textContent="✕";x.setAttribute("aria-label","Delete plan");
+        x.onclick=function(){
+          if(x.dataset.s!=="1"){x.dataset.s="1";x.textContent="Delete?";x.style.color="#d33";setTimeout(function(){x.dataset.s="";x.textContent="✕";x.style.color=""},3000);return}
+          api("delete",{id:p.id}).then(load).catch(function(e){toast("Couldn’t delete: "+e.message)});
+        };
+        r.appendChild(x);
+        day.appendChild(r);
+      });
+      box.appendChild(day);
+    }
+  }
+
+  /* ---------- people, colours, dialog ---------- */
+  function buildWhos(){var b=$("whos");b.textContent="";PEOPLE.forEach(function(p){var x=document.createElement("button");x.type="button";x.textContent=p[0];x.className=sel.indexOf(p[0])>=0?"on":"";x.style.setProperty("--pc",p[1]);x.onclick=function(){var i=sel.indexOf(p[0]);if(i>=0)sel.splice(i,1);else sel.push(p[0]);buildWhos()};b.appendChild(x)})}
+  function chips(who){var d=document.createElement("div");d.className="chips";var list=(who&&who.length)?who:null;if(!list||list.length===PEOPLE.length){var c=document.createElement("span");c.className="chip";c.textContent="Everyone";d.appendChild(c);return d}list.forEach(function(n){var pc="#888";PEOPLE.forEach(function(p){if(p[0]===n)pc=p[1]});var c=document.createElement("span");c.className="chip";c.style.background=pc;c.style.color="#fff";c.textContent=n;d.appendChild(c)});return d}
+  function buildCols(){var b=$("cols");b.textContent="";var s=document.createElement("span");s.textContent="Pick your colour:";b.appendChild(s);PEOPLE.forEach(function(p){var l=document.createElement("label");var i=document.createElement("input");i.type="color";i.value=p[1];i.onchange=function(){p[1]=i.value;var o={};PEOPLE.forEach(function(q){o[q[0]]=q[1]});render();api("colors",{colors:o}).catch(function(e){toast("Couldn’t save the colour: "+e.message)})};l.appendChild(i);l.appendChild(document.createTextNode(p[0]));b.appendChild(l)})}
+  function openEdit(p){$("derr").textContent="";$("del").hidden=false;$("del").textContent="Delete";editId=p.id;addDate=p.date;sel=(p.who||[]).slice();buildWhos();$("ftitle").value=p.title||"";$("ftime").value=p.time||"";$("fdate").value=p.date||"";$("dtitle").textContent="Edit plan";$("save").textContent="Save";$("dlg").showModal();$("ftitle").focus()}
+  function openAdd(key){$("derr").textContent="";$("del").hidden=true;editId=null;addDate=key;sel=[];buildWhos();$("ftitle").value="";$("ftime").value="";$("fdate").value=key;$("save").textContent="Add";$("dtitle").textContent="Add a plan · "+key;$("dlg").showModal();$("ftitle").focus()}
+  $("cancel").onclick=function(){$("dlg").close()};
+  $("del").onclick=function(){
+    var b=$("del");
+    if(b.dataset.s!=="1"){b.dataset.s="1";b.textContent="Tap again to delete";setTimeout(function(){b.dataset.s="";b.textContent="Delete"},4000);return}
+    b.dataset.s="";$("derr").textContent="";
+    api("delete",{id:editId}).then(load).then(function(){$("dlg").close()}).catch(function(e){$("derr").textContent="Couldn’t delete: "+e.message});
+  };
+  $("save").onclick=function(){
+    var title=$("ftitle").value.trim();if(!title)return;
+    var plan={id:editId||("p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date:$("fdate").value||addDate,time:$("ftime").value||"",title:title,who:sel.slice()};
+    $("save").disabled=true;$("derr").textContent="";
+    api("save",{plan:plan}).then(load).then(function(){$("dlg").close()}).catch(function(e){$("derr").textContent="Couldn’t save: "+e.message}).then(function(){$("save").disabled=false});
+  };
+
+  /* ---------- navigation ---------- */
+  $("prev").onclick=function(){if(view==="year")year--;else if(view==="month"){month--;if(month<0){month=11;year--}}else weekStart=addDays(weekStart,-7);render()};
+  $("next").onclick=function(){if(view==="year")year++;else if(view==="month"){month++;if(month>11){month=0;year++}}else weekStart=addDays(weekStart,7);render()};
+  $("today").onclick=function(){var t=new Date();weekStart=startOfWeek(t);year=t.getFullYear();month=t.getMonth();render()};
+  $("tw").onclick=function(){view="week";sync();render()};
+  $("tm").onclick=function(){view="month";year=weekStart.getFullYear();month=weekStart.getMonth();sync();render()};
+  $("ty").onclick=function(){view="year";year=weekStart.getFullYear();sync();render()};
+
+  buildCols();start();
+})();
+</script>
+</body>
+</html>
